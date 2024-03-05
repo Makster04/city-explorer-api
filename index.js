@@ -8,7 +8,7 @@ const port = 3000;
 const weatherData = JSON.parse(fs.readFileSync('weather.json'));
 
 // Create API endpoint to handle GET requests to /weather
-app.get('/weather', (req, res) => {
+app.get('/weather.json', (req, res) => {
   const { lat, lon, searchQuery } = req.query;
 
   // Find the city based on lat, lon, or searchQuery
