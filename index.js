@@ -3,40 +3,43 @@
 const express = require('express');
 const cors = require('cors');
 const weatherData = require('./weather.json');
-
 const app = express();
-app.use(cors());
 
-class Weather {
-  constructor(description, high_temp, low_temp, datetime) {
+class Forecast {
+  constructor(date, description) {
+    this.date = date;
     this.description = description;
-    this.high_temp = high_temp;
-    this.low_temp = low_temp;
-    this.datetime = datetime;
   }
 }
 
+app.use(cors());
+app.use(express.json());
+
+
+
 app.get('/weather', (request, response) => {
-  let weather = weatherData.records.map((values) => {
-    return new Weather(values.description, values.high_temp, values.low_temp, values.datetime);
-  });
+  const { lat, lon, searchQuery } = request.query;
 
-  response.send(weather);
-});
-
-app.get('/weather/:name', (request, response) => {
-  let weatherName = request.params.name;
-  let result = weatherData.records.find(weather => weather.name === weatherName);
-
-  if (result) {
-    let weatherObject = new Weather(result.description, result.high_temp, result.low_temp, result.datetime);
-    response.send(weatherObject);
-  } else {
-    response.status(404).send("Weather data not found.");
+  // Find the city based on lat, lon, or searchQuery
+  let cityWeather;
+  if (searchQuery) {
+    cityWeather = weatherData.find(city => city.city_name.toLowerCase() === searchQuery.toLowerCase());
+  } else if (lat && lon) {
+    cityWeather = weatherData.find(city => city.lat === lat && city.lon === lon);
   }
+
+  // If city not found, return an error
+  if (!cityWeather) {
+    return response.status(404).json({ error: 'City not found' });
+  }
+
+  // Process weather data for the city
+  const forecasts = cityWeather.data.map(day => new Forecast(day.datetime, day.weather.description));
+
+  // Send the processed data back to the client
+  response.json(forecasts);
 });
 
 app.listen(3000, () => {
   console.log('Server running on port 3000');
 });
-
