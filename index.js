@@ -3,14 +3,22 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors'); // cross origin resource sharing tool
+const axios = require('axios');
 const weatherData = require('./data/weather.json');
-
-// Load environment variables from .env file
 dotenv.config();
 
+const PORT =  process.env.PORT || 3000
+
+// Load environment variables from .env file
+
 const app = express();
-const port = process.env.PORT || 3000;
 app.use(cors());
+
+// app.get('/photos,', async (request, response) => {
+  // let searchQuery = request.query.search;
+  // console.log('REQUEST QUERY STRING', request.query.search);
+  // let photoResponse = await axios
+//}
 
 class Forecast {
   constructor(date, description, high, low) {
