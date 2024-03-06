@@ -37,6 +37,7 @@ app.get('/weather/:lat_lon', (req, res) => {
   const lat = req.params.lat_lon.split('_')[0];
   const lon = req.params.lat_lon.split('_')[1];
   const foundCity = weatherData.find(city => city.lat === lat && city.lon === lon);
+console.log("HERE IS THE LAT AND LON", lat, lon, foundCity)
 
   if (!foundCity) {
     return res.status(404).json({error: 'City not found. Please search for Seattle, Paris, or Amman.'});
@@ -49,8 +50,6 @@ app.get('/weather/:lat_lon', (req, res) => {
   }
 });
 
-const express = require('express');
-const app = express();
 const port = process.env.PORT || 3000; // Define port variable
 
 // Other routes and middleware configuration
