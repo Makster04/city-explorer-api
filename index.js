@@ -1,39 +1,42 @@
+'use strict';
+
 const express = require('express');
-const fs = require('fs');
+const cors = require('cors');
+const weatherData = require('./weather.json');
 
 const app = express();
-const port = 3000;
+app.use(cors());
 
-// Read weather data from weather.json file
-const weatherData = JSON.parse(fs.readFileSync('weather.json'));
-
-// Create API endpoint to handle GET requests to /weather
-app.get('/weather.json', (req, res) => {
-  const { lat, lon, searchQuery } = req.query;
-
-  // Find the city based on lat, lon, or searchQuery
-  const city = weatherData.find(city => {
-    return (
-      city.lat === parseFloat(lat) ||
-      city.lon === parseFloat(lon) ||
-      city.searchQuery.toLowerCase() === searchQuery.toLowerCase()
-    );
-  });
-
-  if (!city) {
-    return res.status(404).json({ error: 'City not found' });
+class Weather {
+  constructor(description, high_temp, low_temp, datetime) {
+    this.description = description;
+    this.high_temp = high_temp;
+    this.low_temp = low_temp;
+    this.datetime = datetime;
   }
+}
 
-  // Create Forecast objects for each day
-  const forecasts = city.forecast.map(({ date, description }) => {
-    return { date, description };
+app.get('/weather', (request, response) => {
+  let weather = weatherData.records.map((values) => {
+    return new Weather(values.description, values.high_temp, values.low_temp, values.datetime);
   });
 
-  // Send the array of Forecast objects back to the client
-  res.json(forecasts);
+  response.send(weather);
 });
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+app.get('/weather/:name', (request, response) => {
+  let weatherName = request.params.name;
+  let result = weatherData.records.find(weather => weather.name === weatherName);
+
+  if (result) {
+    let weatherObject = new Weather(result.description, result.high_temp, result.low_temp, result.datetime);
+    response.send(weatherObject);
+  } else {
+    response.status(404).send("Weather data not found.");
+  }
 });
+
+app.listen(3000, () => {
+  console.log('Server running on port 3000');
+});
+
