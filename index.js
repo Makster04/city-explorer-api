@@ -37,10 +37,9 @@ app.get('/weather/:lat_lon', (req, res) => {
   const lat = req.params.lat_lon.split('_')[0];
   const lon = req.params.lat_lon.split('_')[1];
   const foundCity = weatherData.find(city => city.lat === lat && city.lon === lon);
-console.log("HERE IS THE LAT AND LON", lat, lon, foundCity)
 
-  if (!foundCity) {
-    return res.status(404).json({error: 'City not found. Please search for Seattle, Paris, or Amman.'});
+  if (!foundCity || !foundCity.data) { // Check if foundCity or foundCity.data is undefined
+    return res.status(404).json({ error: 'City not found. Please search for Seattle, Paris, or Amman.' });
   } else {
     let weatherDex = foundCity.data.map((values) => {
       return new Forecast(values.datetime, values.weather.description, values.max_temp, values.min_temp);
@@ -49,6 +48,7 @@ console.log("HERE IS THE LAT AND LON", lat, lon, foundCity)
     res.send(weatherDex);
   }
 });
+
 
 const port = process.env.PORT || 3000; // Define port variable
 
