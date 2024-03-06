@@ -1,45 +1,46 @@
 'use strict';
 
 const express = require('express');
-const cors = require('cors');
-const weatherData = require('./weather.json');
+const dotenv = require('dotenv');
+const cors = require('cors'); // cross origin resource sharing tool
+const weatherData = require('./data/weather.json');
+
+// Load environment variables from .env file
+dotenv.config();
+
 const app = express();
+const port = process.env.PORT || 3000;
+app.use(cors());
 
 class Forecast {
-  constructor(date, description) {
+  constructor(date, description, high, low) {
     this.date = date;
     this.description = description;
+    this.high = high;
+    this.low = low;
   }
 }
 
-app.use(cors());
-app.use(express.json());
-
-
-
-app.get('/weather', (request, response) => {
-  const { lat, lon, searchQuery } = request.query;
-
-  // Find the city based on lat, lon, or searchQuery
-  let cityWeather;
-  if (searchQuery) {
-    cityWeather = weatherData.find(city => city.city_name.toLowerCase() === searchQuery.toLowerCase());
-  } else if (lat && lon) {
-    cityWeather = weatherData.find(city => city.lat === lat && city.lon === lon);
-  }
-
-  // If city not found, return an error
-  if (!cityWeather) {
-    return response.status(404).json({ error: 'City not found' });
-  }
-
-  // Process weather data for the city
-  const forecasts = cityWeather.data.map(day => new Forecast(day.datetime, day.weather.description));
-
-  // Send the processed data back to the client
-  response.json(forecasts);
+app.get('/', (req, res) => {
+  res.send('Hello, Express!');
 });
 
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
+app.get('/weather/:lat_lon', (req, res) => {
+  const lat = req.params.lat_lon.split('_')[0];
+  const lon = req.params.lat_lon.split('_')[1];
+  const foundCity = weatherData.find(city => city.lat === lat && city.lon === lon);
+
+  if (!foundCity) {
+    return res.status(404).json({error: 'City not found. Please search for Seattle, Paris, or Amman.'});
+  } else {
+    let weatherDex = foundCity.data.map((values) => {
+      return new Forecast(values.datetime, values.weather.description, values.max_temp, values.min_temp);
+    });
+
+    res.send(weatherDex);
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server is running on port ${port}`);
 });
