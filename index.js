@@ -36,8 +36,8 @@ app.get('/', (req, res) => {
 app.get('/weather/:lat_lon', (req, res) => {
   const lat = req.params.lat_lon.split('_')[0];
   const lon = req.params.lat_lon.split('_')[1];
-  const foundCity = weatherData.find(city => city.lat === lat && city.lon === lon);
-
+  const foundCity = weatherData.find(city => city.lat === lat && city.lon === lon)
+  console.log("HERE IS WHAT WE KNOW:", lat, lat, foundCity);
   if (!foundCity || !foundCity.data) { // Check if foundCity or foundCity.data is undefined
     return res.status(404).json({ error: 'City not found. Please search for Seattle, Paris, or Amman.' });
   } else {
