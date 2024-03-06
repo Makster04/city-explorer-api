@@ -49,6 +49,12 @@ app.get('/weather/:lat_lon', (req, res) => {
   }
 });
 
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 3000; // Define port variable
+
+// Other routes and middleware configuration
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
