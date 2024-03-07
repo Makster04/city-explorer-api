@@ -42,8 +42,8 @@ app.get('/weather/:lat_lon', async (req, res) => {
     const weatherDex = weatherData.data.data.map(values => new Forecast(values.datetime, values.weather.description, values.max_temp, values.min_temp));
     res.json(weatherDex);
   } catch (error) {
-    console.error('Error fetching weather data:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error fetching weather data:', error.message); // Log error message
+    res.status(500).json({ error: 'Internal Server Error', message: error.message }); // Send error message in response
   }
 });
 
@@ -54,17 +54,18 @@ app.get('/movies/:city', async (req, res) => {
     const options = {
       headers: {
         accept: 'application/json',
-        Authorization: `Bearer ${movie_key}`
+        api_key: movie_key
       }
     };
     const movieData = await axios.get(`https://api.themoviedb.org/3/search/movie?query=${req.params.city}&include_adult=false&language=en-US&page=1`, options);
     const moviesDex = movieData.data.results.map(values => new Movie(values.title, values.release_date, values.overview));
     res.json(moviesDex);
   } catch (error) {
-    console.error('Error fetching movie data:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error fetching movie data:', error.message); // Log error message
+    res.status(500).json({ error: 'Internal Server Error', message: error.message }); // Send error message in response
   }
 });
+
 
 // Default route
 app.get('/', (req, res) => {
