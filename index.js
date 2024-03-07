@@ -53,8 +53,8 @@ app.get('/movies/:city', async (req, res) => {
     const movie_key = process.env.MOVIE_API_KEY; // Ensure you have this environment variable set
     const options = {
       headers: {
-        accept: 'application/json',
-        api_key: movie_key
+          accept: 'application/json',
+          Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIwMjRiMGE4ZWI5Yzg4YzU2ZjMwMzhkMWU2OTg5OWYyYSIsInN1YiI6IjY1ZTk2MjUxM2Q3NDU0MDE2NGI4YjY4ZiIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.aR5SgToQPhk55h4UKSm_WUhKEPl8fALYoMwTXhZeLLg'
       }
     };
     const movieData = await axios.get(`https://api.themoviedb.org/3/search/movie?query=${req.params.city}&include_adult=false&language=en-US&page=1`, options);
