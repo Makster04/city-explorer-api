@@ -1,10 +1,17 @@
 const express = require('express');
 const axios = require('axios');
+const cors = require('cors'); // Import cors package
+const dotenv = require('dotenv');
 const app = express();
 const port = process.env.PORT || 3000; // Use PORT environment variable if available
 
+
+// Load environment variables from .env file
+dotenv.config();
 // Middleware to parse JSON bodies
 app.use(express.json());
+// Use cors middleware to enable CORS
+app.use(cors());
 
 // Define the class for Forecast
 class Forecast {
