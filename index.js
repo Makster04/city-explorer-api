@@ -3,6 +3,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const getMovies = require('./movie');
 const getWeather = require('./weather');
+const cache = {};
+
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -11,6 +13,7 @@ dotenv.config();
 
 app.use(express.json());
 app.use(cors());
+
 
 app.get('/weather/:lat_lon', async (req, res) => {
   try {
